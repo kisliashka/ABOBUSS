@@ -1,0 +1,7 @@
+program title1;
+var b, c2 : boolean;
+var c : integer;
+label c1;
+begin
+b := true
+end.
