@@ -41,7 +41,7 @@ public:
     lex_it cursor;
     lex_it label_adr;
 
-    // Проверяем пустой ли у нас файл и инициализируем таблицу лексем
+    // РџСЂРѕРІРµСЂСЏРµРј РїСѓСЃС‚РѕР№ Р»Рё Сѓ РЅР°СЃ С„Р°Р№Р» Рё РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј С‚Р°Р±Р»РёС†Сѓ Р»РµРєСЃРµРј
     Syntaxx(vector<Lexem> t_lex_table) : lex_table(t_lex_table), cursor(lex_table.begin()) {
         if (lex_table.empty()) {
             cout << "Lexemes table is empty!" << endl;
@@ -51,13 +51,13 @@ public:
         }
     }
 
-    // Получаем по итерации следующую лексему
+    // РџРѕР»СѓС‡Р°РµРј РїРѕ РёС‚РµСЂР°С†РёРё СЃР»РµРґСѓСЋС‰СѓСЋ Р»РµРєСЃРµРјСѓ
     lex_it getNextLex(lex_it iter) {
         ++iter;
         return iter;
     }
 
-    // Соответствует ли лексема токену
+    // РЎРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ Р»Рё Р»РµРєСЃРµРјР° С‚РѕРєРµРЅСѓ
     bool checkLexem(const lex_it& t_iter, const tokens& t_tok) {
         if (t_iter == lex_table.end()) {
             return false;
@@ -65,21 +65,21 @@ public:
         return t_iter->GetToken() == t_tok;
     }
 
-    //Проверка существования переменной
+    //РџСЂРѕРІРµСЂРєР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ РїРµСЂРµРјРµРЅРЅРѕР№
     bool isVarExist(const string& t_var_name)
     {
         auto map_iter = id_map.find(t_var_name);
         return !(map_iter == id_map.end());
     }
 
-    //Получить тип переменной
+    //РџРѕР»СѓС‡РёС‚СЊ С‚РёРї РїРµСЂРµРјРµРЅРЅРѕР№
     string getVarType(const string& t_var_name)
     {
         auto map_iter = id_map.find(t_var_name);
         return map_iter->second.type;
     }
 
-    //Обновление информации о типе в карте индентификаторов
+    //РћР±РЅРѕРІР»РµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ С‚РёРїРµ РІ РєР°СЂС‚Рµ РёРЅРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРІ
     void updateVarTypes(const list<string>& t_var_list,
         const string& t_type_name, int t_array_l) {
         try {
@@ -95,7 +95,7 @@ public:
         }
     }
 
-    //Обновление информации о значении в карте индентификаторов
+    //РћР±РЅРѕРІР»РµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ Р·РЅР°С‡РµРЅРёРё РІ РєР°СЂС‚Рµ РёРЅРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРІ
     void updateVarValue(const list<string>& t_var_list,
         const string& t_value) {
         try {
@@ -142,21 +142,22 @@ public:
 
     int programParse(lex_it& t_iter, Tree* parent) {
         // PROGRAMPARSING
-        if (checkLexem(t_iter, program_tk)) { // ВАРИАНТ ПАРСИНГА С УЧЕТОМ PROGRAM
+        if (checkLexem(t_iter, program_tk)) { // Р’РђР РРђРќРў РџРђР РЎРРќР“Рђ РЎ РЈР§Р•РўРћРњ PROGRAM
             auto iter = getNextLex(t_iter);
-            if (!checkLexem(iter, id_tk)) { // проверка на название программы
+            if (!checkLexem(iter, id_tk)) { // РїСЂРѕРІРµСЂРєР° РЅР° РЅР°Р·РІР°РЅРёРµ РїСЂРѕРіСЂР°РјРјС‹
                 printError(MUST_BE_ID, *iter);
                 Errors++;
                 return -EXIT_FAILURE;
             }
-
+            Tree* NAMEPROG = Tree::CreateNode(iter->GetName());
+            parent->AddRightTree(NAMEPROG);
             iter++;
 
-            // Создание узла BLOCK и добавление его как левый сын Program
+            // РЎРѕР·РґР°РЅРёРµ СѓР·Р»Р° BLOCK Рё РґРѕР±Р°РІР»РµРЅРёРµ РµРіРѕ РєР°Рє Р»РµРІС‹Р№ СЃС‹РЅ Program
             Tree* BLOCK = Tree::CreateNode("BLOCK");
             parent->AddLeftTree(BLOCK);
 
-            // Обработка ';' после названия программы
+            // РћР±СЂР°Р±РѕС‚РєР° ';' РїРѕСЃР»Рµ РЅР°Р·РІР°РЅРёСЏ РїСЂРѕРіСЂР°РјРјС‹
             if (!checkLexem(iter, semicolon_tk)) {
                 printError(MUST_BE_SEMI, *iter);
                 Errors++;
@@ -165,25 +166,25 @@ public:
 
             iter++;
 
-            // VARPARSING: Обработка объявлений переменных
-            while (!checkLexem(iter, begin_tk)) { // Пока не встретится BEGIN
-                // ОБРАБОТКА ПЕРЕМЕННЫХ
+            // VARPARSING: РћР±СЂР°Р±РѕС‚РєР° РѕР±СЉСЏРІР»РµРЅРёР№ РїРµСЂРµРјРµРЅРЅС‹С…
+            while (!checkLexem(iter, begin_tk)) { // РџРѕРєР° РЅРµ РІСЃС‚СЂРµС‚РёС‚СЃСЏ BEGIN
+                // РћР‘Р РђР‘РћРўРљРђ РџР•Р Р•РњР•РќРќР«РҐ
                 while (checkLexem(iter, var_tk)) {
-                    iter++; // Переходим после 'var'
+                    iter++; // РџРµСЂРµС…РѕРґРёРј РїРѕСЃР»Рµ 'var'
 
-                    // Сбор имен идентификаторов
+                    // РЎР±РѕСЂ РёРјРµРЅ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРІ
                     list<string> var_list;
                     while (checkLexem(iter, id_tk)) {
                         string varName = iter->GetName();
 
-                        // Проверка на повторное объявление
+                        // РџСЂРѕРІРµСЂРєР° РЅР° РїРѕРІС‚РѕСЂРЅРѕРµ РѕР±СЉСЏРІР»РµРЅРёРµ
                         if (isVarExist(varName)) {
                             cout << "Re-declared identifier '" << varName << "'" << endl;
                             Errors++;
                             return -EXIT_FAILURE;
                         }
                         else {
-                            // Временная инициализация переменной с неизвестным типом
+                            // Р’СЂРµРјРµРЅРЅР°СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРµСЂРµРјРµРЅРЅРѕР№ СЃ РЅРµРёР·РІРµСЃС‚РЅС‹Рј С‚РёРїРѕРј
                             id_map.emplace(varName, Variable("?", "?", 0));
                             var_list.push_back(varName);
                         }
@@ -191,7 +192,7 @@ public:
                         iter++;
 
                         if (checkLexem(iter, comma_tk)) {
-                            iter++; // Пропускаем запятую и продолжаем
+                            iter++; // РџСЂРѕРїСѓСЃРєР°РµРј Р·Р°РїСЏС‚СѓСЋ Рё РїСЂРѕРґРѕР»Р¶Р°РµРј
                             if (!checkLexem(iter, id_tk)) {
                                 printError(MUST_BE_ID, *iter);
                                 Errors++;
@@ -199,46 +200,46 @@ public:
                             }
                         }
                         else {
-                            break; // Нет запятой, заканчиваем сбор переменных
+                            break; // РќРµС‚ Р·Р°РїСЏС‚РѕР№, Р·Р°РєР°РЅС‡РёРІР°РµРј СЃР±РѕСЂ РїРµСЂРµРјРµРЅРЅС‹С…
                         }
                     }
 
-                    // После списка переменных должен идти ':'
+                    // РџРѕСЃР»Рµ СЃРїРёСЃРєР° РїРµСЂРµРјРµРЅРЅС‹С… РґРѕР»Р¶РµРЅ РёРґС‚Рё ':'
                     if (!checkLexem(iter, colon_tk)) {
                         cout << "Must be ':' after variable names." << endl;
                         Errors++;
                         return -EXIT_FAILURE;
                     }
-                    iter++; // Переходим после ':'
+                    iter++; // РџРµСЂРµС…РѕРґРёРј РїРѕСЃР»Рµ ':'
 
-                    // Проверка типа переменной
+                    // РџСЂРѕРІРµСЂРєР° С‚РёРїР° РїРµСЂРµРјРµРЅРЅРѕР№
                     if (!checkLexem(iter, integer_tk) && !checkLexem(iter, boolean_tk)) {
                         cout << "Unknown type." << endl;
                         Errors++;
                         return -EXIT_FAILURE;
                     }
                     string type_iter = iter->GetName();
-                    iter++; // Переходим после типа
+                    iter++; // РџРµСЂРµС…РѕРґРёРј РїРѕСЃР»Рµ С‚РёРїР°
 
-                    // Проверка на ';' после объявления переменных
+                    // РџСЂРѕРІРµСЂРєР° РЅР° ';' РїРѕСЃР»Рµ РѕР±СЉСЏРІР»РµРЅРёСЏ РїРµСЂРµРјРµРЅРЅС‹С…
                     if (!checkLexem(iter, semicolon_tk)) {
                         cout << "Must be ';' after variable declaration." << endl;
                         Errors++;
                         return -EXIT_FAILURE;
                     }
-                    iter++; // Переходим после ';'
+                    iter++; // РџРµСЂРµС…РѕРґРёРј РїРѕСЃР»Рµ ';'
 
-                    // Обновление типов переменных в карте идентификаторов
+                    // РћР±РЅРѕРІР»РµРЅРёРµ С‚РёРїРѕРІ РїРµСЂРµРјРµРЅРЅС‹С… РІ РєР°СЂС‚Рµ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРІ
                     for (const string& varName : var_list) {
                         id_map.at(varName).type = type_iter;
                     }
 
-                    // Создание отдельного VarDecl для каждой переменной
+                    // РЎРѕР·РґР°РЅРёРµ РѕС‚РґРµР»СЊРЅРѕРіРѕ VarDecl РґР»СЏ РєР°Р¶РґРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№
                     for (const string& varName : var_list) {
-                        // Создание узла VarDecl
+                        // РЎРѕР·РґР°РЅРёРµ СѓР·Р»Р° VarDecl
                         Tree* currentDecl = Tree::CreateNode("VarDecl");
 
-                        // Добавление VarDecl как сиблинг под BLOCK
+                        // Р”РѕР±Р°РІР»РµРЅРёРµ VarDecl РєР°Рє СЃРёР±Р»РёРЅРі РїРѕРґ BLOCK
                         if (BLOCK->GetLeftNode() == nullptr) {
                             BLOCK->AddLeftTree(currentDecl);
                         }
@@ -250,21 +251,21 @@ public:
                             sibling->AddRightTree(currentDecl);
                         }
 
-                        // Добавление имени переменной как левый узел VarDecl
+                        // Р”РѕР±Р°РІР»РµРЅРёРµ РёРјРµРЅРё РїРµСЂРµРјРµРЅРЅРѕР№ РєР°Рє Р»РµРІС‹Р№ СѓР·РµР» VarDecl
                         Tree* varNode = Tree::CreateNode(varName);
                         currentDecl->AddLeftTree(varNode);
 
-                        // Добавление типа как правый узел VarDecl
+                        // Р”РѕР±Р°РІР»РµРЅРёРµ С‚РёРїР° РєР°Рє РїСЂР°РІС‹Р№ СѓР·РµР» VarDecl
                         Tree* typeNode = Tree::CreateNode(type_iter);
                         varNode->AddRightTree(typeNode);
                     }
                 }
 
-                // ОБРАБОТКА LABELS
+                // РћР‘Р РђР‘РћРўРљРђ LABELS
                 if (checkLexem(iter, label_tk)) {
                     iter++;
-                    // ОБРАБОТКА ИНДЕНТИФИКАТОРОВ
-                    if (!checkLexem(iter, id_tk)) { // проверка на идентификатор
+                    // РћР‘Р РђР‘РћРўРљРђ РРќР”Р•РќРўРР¤РРљРђРўРћР РћР’
+                    if (!checkLexem(iter, id_tk)) { // РїСЂРѕРІРµСЂРєР° РЅР° РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
                         cout << "Must be identifier." << endl;
                         Errors++;
                         return -EXIT_FAILURE;
@@ -272,11 +273,11 @@ public:
 
                     list<string> label_list;
 
-                    // Сбор меток
+                    // РЎР±РѕСЂ РјРµС‚РѕРє
                     while (checkLexem(iter, id_tk)) {
                         string labelName = iter->GetName();
 
-                        // Проверка на повторное объявление
+                        // РџСЂРѕРІРµСЂРєР° РЅР° РїРѕРІС‚РѕСЂРЅРѕРµ РѕР±СЉСЏРІР»РµРЅРёРµ
                         if (isVarExist(labelName)) {
                             cout << "Re-declared identifier '" << labelName << "'" << endl;
                             Errors++;
@@ -290,7 +291,7 @@ public:
                         iter++;
 
                         if (checkLexem(iter, comma_tk)) {
-                            iter++; // Пропускаем запятую и продолжаем
+                            iter++; // РџСЂРѕРїСѓСЃРєР°РµРј Р·Р°РїСЏС‚СѓСЋ Рё РїСЂРѕРґРѕР»Р¶Р°РµРј
                             if (!checkLexem(iter, id_tk)) {
                                 printError(MUST_BE_ID, *iter);
                                 Errors++;
@@ -298,24 +299,24 @@ public:
                             }
                         }
                         else {
-                            break; // Нет запятой, заканчиваем сбор меток
+                            break; // РќРµС‚ Р·Р°РїСЏС‚РѕР№, Р·Р°РєР°РЅС‡РёРІР°РµРј СЃР±РѕСЂ РјРµС‚РѕРє
                         }
                     }
 
-                    // Проверка на ';' после объявлений меток
+                    // РџСЂРѕРІРµСЂРєР° РЅР° ';' РїРѕСЃР»Рµ РѕР±СЉСЏРІР»РµРЅРёР№ РјРµС‚РѕРє
                     if (!checkLexem(iter, semicolon_tk)) {
                         cout << "Must be ';' after label declarations." << endl;
                         Errors++;
                         return -EXIT_FAILURE;
                     }
-                    iter++; // Переходим после ';'
+                    iter++; // РџРµСЂРµС…РѕРґРёРј РїРѕСЃР»Рµ ';'
 
-                    // Создание отдельного LabelDecl для каждой метки
+                    // РЎРѕР·РґР°РЅРёРµ РѕС‚РґРµР»СЊРЅРѕРіРѕ LabelDecl РґР»СЏ РєР°Р¶РґРѕР№ РјРµС‚РєРё
                     for (const string& labelName : label_list) {
-                        // Создание узла LabelDecl
+                        // РЎРѕР·РґР°РЅРёРµ СѓР·Р»Р° LabelDecl
                         Tree* currentLabelDecl = Tree::CreateNode("LabelDecl");
 
-                        // Добавление LabelDecl как сиблинг под BLOCK
+                        // Р”РѕР±Р°РІР»РµРЅРёРµ LabelDecl РєР°Рє СЃРёР±Р»РёРЅРі РїРѕРґ BLOCK
                         if (BLOCK->GetLeftNode() == nullptr) {
                             BLOCK->AddLeftTree(currentLabelDecl);
                         }
@@ -327,12 +328,12 @@ public:
                             sibling->AddRightTree(currentLabelDecl);
                         }
 
-                        // Добавление имени метки как левый узел LabelDecl
+                        // Р”РѕР±Р°РІР»РµРЅРёРµ РёРјРµРЅРё РјРµС‚РєРё РєР°Рє Р»РµРІС‹Р№ СѓР·РµР» LabelDecl
                         Tree* labelNode = Tree::CreateNode(labelName);
                         currentLabelDecl->AddLeftTree(labelNode);
                     }
                 }
-                // ОБРАБОТКА BEGIN
+                // РћР‘Р РђР‘РћРўРљРђ BEGIN
                 else if (!checkLexem(iter, begin_tk)) {
                     cout << "Expected 'begin'." << endl;
                     Errors++;
@@ -341,18 +342,18 @@ public:
             }
             iter++;
 
-            //Создание дерева COMPOUND
+            //РЎРѕР·РґР°РЅРёРµ РґРµСЂРµРІР° COMPOUND
             Tree* COMPOUND = Tree::CreateNode("BEGIN");
             BLOCK->AddRightTree(COMPOUND);
-            // ОБРАБАТЫВАЕТСЯ ВСЕ, ЧТО НАХОДИТСЯ ПОД BEGIN
+            // РћР‘Р РђР‘РђРўР«Р’РђР•РўРЎРЇ Р’РЎР•, Р§РўРћ РќРђРҐРћР”РРўРЎРЇ РџРћР” BEGIN
             while (!checkLexem(iter, end_tk)) {
 
                 //label
-                // ПРОВЕРКА НА ИНДЕТИФИКАТОРЫ
+                // РџР РћР’Р•Р РљРђ РќРђ РРќР”Р•РўРР¤РРљРђРўРћР Р«
                 if (checkLexem(iter, id_tk)) {
                     if (isVarExist(iter->GetName())) {
                     
-                    //если переменная является меткой, то будут следующие правила;
+                    //РµСЃР»Рё РїРµСЂРµРјРµРЅРЅР°СЏ СЏРІР»СЏРµС‚СЃСЏ РјРµС‚РєРѕР№, С‚Рѕ Р±СѓРґСѓС‚ СЃР»РµРґСѓСЋС‰РёРµ РїСЂР°РІРёР»Р°;
                         if (getVarType(iter->GetName()) == "label") {
                             label_adr = iter;
                             label_setup = iter->GetName();
@@ -363,7 +364,7 @@ public:
                                 return -EXIT_FAILURE;
                             }
                         }
-                        //если переменная является boolean, то будут следующие правила
+                        //РµСЃР»Рё РїРµСЂРµРјРµРЅРЅР°СЏ СЏРІР»СЏРµС‚СЃСЏ boolean, С‚Рѕ Р±СѓРґСѓС‚ СЃР»РµРґСѓСЋС‰РёРµ РїСЂР°РІРёР»Р°
                         else if (getVarType(iter->GetName()) == "boolean") {
 
                             Tree* VARNAME = Tree::CreateNode(iter->GetName());
@@ -425,8 +426,8 @@ public:
                                 ASSIGN->AddLeftTree(VARNAME);
                             }
                         }
-                        //если переменная является integer, то будут следующие правила
-                        //Логика :=
+                        //РµСЃР»Рё РїРµСЂРµРјРµРЅРЅР°СЏ СЏРІР»СЏРµС‚СЃСЏ integer, С‚Рѕ Р±СѓРґСѓС‚ СЃР»РµРґСѓСЋС‰РёРµ РїСЂР°РІРёР»Р°
+                        //Р›РѕРіРёРєР° :=
                         else if (getVarType(iter->GetName()) == "integer") {
 
                             Tree* VARNAME = Tree::CreateNode(iter->GetName());
@@ -500,7 +501,7 @@ public:
                                 
                             }
                             else {
-                                //Когда сразу узнали об ошибке
+                                //РљРѕРіРґР° СЃСЂР°Р·Сѓ СѓР·РЅР°Р»Рё РѕР± РѕС€РёР±РєРµ
                                 if (checkLexem(iter, id_tk)) {
                                     cout << "Unknown indentifier. '" << iter->GetName() << "'" << endl;
                                     Errors++;
@@ -522,13 +523,13 @@ public:
                     }
                     
                     iter++;
-                    //если переменная является integer, то будут следующие правила;
+                    //РµСЃР»Рё РїРµСЂРµРјРµРЅРЅР°СЏ СЏРІР»СЏРµС‚СЃСЏ integer, С‚Рѕ Р±СѓРґСѓС‚ СЃР»РµРґСѓСЋС‰РёРµ РїСЂР°РІРёР»Р°;
                     //if (type_var == "boolean") {
                         //iter++;
                     //}
                 }
 
-                //ПРОВЕРКА НА GOTO
+                //РџР РћР’Р•Р РљРђ РќРђ GOTO
                 if (checkLexem(iter, goto_tk)) {
                     iter++;
                     if (!checkLexem(iter, id_tk)) {
@@ -556,7 +557,7 @@ public:
                     
                 }
 
-                // В случае, если нет ни того, ни другого
+                // Р’ СЃР»СѓС‡Р°Рµ, РµСЃР»Рё РЅРµС‚ РЅРё С‚РѕРіРѕ, РЅРё РґСЂСѓРіРѕРіРѕ
                 else if (!checkLexem(iter, end_tk)) {
                     cout << "Expected operator." << endl;
                     Errors++;
@@ -567,7 +568,7 @@ public:
                 }
             }
             iter++;
-            if (!checkLexem(iter, dot_tk)) { // проверка на точку после end
+            if (!checkLexem(iter, dot_tk)) { // РїСЂРѕРІРµСЂРєР° РЅР° С‚РѕС‡РєСѓ РїРѕСЃР»Рµ end
                 // printError(MUST_BE_OP, *iter);
                 cout << "Expected '.' after 'end'." << endl;
                 Errors++;
@@ -583,10 +584,10 @@ public:
             COMPOUND->AddRightTree(END);
         }
 
-        // ВАРИАНТ ПРОВЕРКИ БЕЗ PROGRAM
+        // Р’РђР РРђРќРў РџР РћР’Р•Р РљР Р‘Р•Р— PROGRAM
         else {
             while (!checkLexem(t_iter, begin_tk)) {
-                // ПАРСИНГ INTEGER И BOOLEAN
+                // РџРђР РЎРРќР“ INTEGER Р BOOLEAN
                 if (checkLexem(t_iter, id_tk)) {
                     //string type_var = getVarType(t)
                     t_iter++;
@@ -610,12 +611,12 @@ public:
                 }
                 t_iter++;
             }
-            // ОБРАБАТЫВАЕТСЯ ВСЕ, ЧТО НАХОДИТСЯ ПОД BEGIN
+            // РћР‘Р РђР‘РђРўР«Р’РђР•РўРЎРЇ Р’РЎР•, Р§РўРћ РќРђРҐРћР”РРўРЎРЇ РџРћР” BEGIN
             while (!checkLexem(t_iter, end_tk)) {
                 t_iter++;
             }
             t_iter++;
-            if (!checkLexem(t_iter, dot_tk)) { // проверка на точку после end
+            if (!checkLexem(t_iter, dot_tk)) { // РїСЂРѕРІРµСЂРєР° РЅР° С‚РѕС‡РєСѓ РїРѕСЃР»Рµ end
                 printError(MUST_BE_OP, *t_iter);
                 Errors++;
                 return -EXIT_FAILURE;
@@ -633,14 +634,14 @@ public:
             break;
         }
         //cout << "Current programParse lex: " << it->GetName() << endl;
-        if (Errors == 0) {  // Исправлено, чтобы проверить на сравнение
+        if (Errors == 0) {  // РСЃРїСЂР°РІР»РµРЅРѕ, С‡С‚РѕР±С‹ РїСЂРѕРІРµСЂРёС‚СЊ РЅР° СЃСЂР°РІРЅРµРЅРёРµ
             cout << endl;
-            printIdMap(); // Выводим содержимое id_map
+            printIdMap(); // Р’С‹РІРѕРґРёРј СЃРѕРґРµСЂР¶РёРјРѕРµ id_map
             cout << endl;
             cout << "Syntax tree: " << endl;
            //root->PrintTreeIndented(2);
             root->PrintASCII();
-            Tree::FreeTree(root); // освобождаем память
+            Tree::FreeTree(root); // РѕСЃРІРѕР±РѕР¶РґР°РµРј РїР°РјСЏС‚СЊ
             cout << endl;
             //cout << getVarType("c1");
             cout << "PROGRAMM WAS SUCCESSFULLY PARSEeD!" << endl;
