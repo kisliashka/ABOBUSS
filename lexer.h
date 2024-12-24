@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include <iostream>
-#include <vector>
+#include "MyVector.h"
 #include "Lexem.h"
 using namespace std;
 class Lexer
@@ -11,19 +11,19 @@ class Lexer
 public:
 
 	Lexer(const char* file_path);
-	vector<Lexem> ScanCode();
+	mylib::Vector<Lexem> ScanCode();
 	~Lexer();
 
 private:
 	ifstream code;
 	char cursor{ -1 };
 	int	line{ 0 };
-	vector<Lexem> lex_table;
+	mylib::Vector<Lexem> lex_table;
 
 	Lexem GetLex();
 	char GetChar();
 
-	inline char	GetCurrentCurs() { return cursor; }
+	inline char	GetCurrentCurs() noexcept { return cursor; }
 
 };
 

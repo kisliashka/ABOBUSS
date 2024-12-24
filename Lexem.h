@@ -51,7 +51,8 @@ enum  tokens
     integer_tk,         // integer
     repeat_tk,
     until_tk,
-    and_tk
+    and_tk,
+    bool_noneqv_tk      // '<>'
 };
 enum errors {
     UNKNOWN_LEXEM,          // Unknown lexeme
@@ -97,23 +98,22 @@ enum errors {
     // TODO: Add other types of error
 };
 
-class Lexem
-{
+class Lexem {
 public:
-    Lexem() = default;
-    Lexem(const string& t_name, tokens token_tk, int t_line) : name(t_name), token(token_tk), line(t_line)
-    {
-        cout << t_name << endl;
-    };
+    Lexem() : token(0), line(0) {}
 
-    int                 GetLine() { return line; }
-    tokens              GetToken() { return token; }
-    const string& GetName() { return name; }
+    Lexem(const std::string& name_, int token_, int line_)
+        : name(name_), token(token_), line(line_) {}
+
+    // Геттеры
+    const std::string& GetName() const { return name; }
+    int GetToken() const noexcept { return token; }
+    int GetLine() const noexcept { return line; }
 
 private:
-    string          name{ "" };
-    tokens          token{ unknown_tk };
-    int             line{ 0 };
+    std::string name;
+    int token;
+    int line;
 };
 
 #endif

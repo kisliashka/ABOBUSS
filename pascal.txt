@@ -1,7 +1,5 @@
 program title1;
-var b, c2 : boolean;
-var c : integer;
-label c1;
+var a,c: boolean;
 begin
-b := true
+a := c
 end.

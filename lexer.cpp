@@ -1,5 +1,5 @@
 #include "Lexer.h"
-#include <vector>
+#include "MyVector.h"
 using namespace std;
 
 Lexer::Lexer(const char* file_path) {
@@ -12,7 +12,7 @@ Lexer::Lexer(const char* file_path) {
     }
 }
 
-vector<Lexem> Lexer::ScanCode()
+mylib::Vector<Lexem> Lexer::ScanCode()
 {
     try {
         if (!code) {
@@ -152,6 +152,14 @@ Lexem Lexer::GetLex()
                     if (ch == '=') {
                         lex += ch;
                         tok = bool_leseqv_tk;
+                    }
+                }
+                // '<>'
+                else if (tok == bool_less_tk) {
+                    ch = GetChar();
+                    if (ch == '>') {
+                        lex += ch;
+                        tok = bool_noneqv_tk;
                     }
                 }
             }

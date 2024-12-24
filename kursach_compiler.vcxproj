@@ -127,18 +127,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\codes\GenCode.cpp" />
     <ClCompile Include="compilation.cpp" />
     <ClCompile Include="execute.cpp" />
     <ClCompile Include="lexer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\codes\GenCode.h" />
     <ClInclude Include="course_project.h" />
-    <ClInclude Include="indentifierTable.h" />
+    <ClInclude Include="MyList.h" />
+    <ClInclude Include="MyVector.h" />
     <ClInclude Include="Lexem.h" />
     <ClInclude Include="lexer.h" />
     <ClInclude Include="MySoon.h" />
-    <ClInclude Include="symbols.h" />
-    <ClInclude Include="Syntax.h" />
     <ClInclude Include="Tree.h" />
     <ClInclude Include="variable.h" />
   </ItemGroup>

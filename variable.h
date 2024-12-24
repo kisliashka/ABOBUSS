@@ -12,6 +12,11 @@ public:
 	std::string value = "";
 	int			array_l;
 	int iterator = 0;
+
+
+	bool operator==(const Variable& other) const {
+		return type == other.type && value == other.value && array_l == other.array_l;
+	}
 };
 
 #endif VERIABLE_H
